@@ -1,0 +1,229 @@
+/* [wxMaxima batch file version 1] [ DO NOT EDIT BY HAND! ]*/
+/* [ Created with wxMaxima version 22.04.0 ] */
+/* [wxMaxima: comment start ]
+Poincare metric instead of Minkowski
+verified with example from
+Lorentz transformation - Wikipedia
+that both metrics provide the same transformations
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: input   start ] */
+kill(all);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+load("vect");
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: comment start ]
+spacetime points 1 and 2
+simplification:
+c:1
+non-relativistic case
+v:0
+subluminal case
+v:4/5
+superluminal case
+v:5/4
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: input   start ] */
+assume(c>0);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: comment start ]
+frame 1, original
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: input   start ] */
+a_1:transpose([%i*c*t_1,x_1,y_1,z_1]);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: comment start ]
+frame 2, transformed, "boosted" observer
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: input   start ] */
+a_2:transpose([%i*c*t_2,x_2,y_2,z_2]);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: comment start ]
+the metric: distance of each point from the origin
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: input   start ] */
+dsq:transpose(a_1) . (a_1);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: comment start ]
+relativistic gamma function
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: input   start ] */
+β:v/c;
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+γ:1/sqrt(1-β^2);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: comment start ]
+unitary direction vector n_x,n_y,n_z of length 1
+n_x^2+n_y^2+n_z^2=1
+(x-only direction would be [1,0,0])
+[n_x,n_y,n_z]:[1,0,0]
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: input   start ] */
+[n_x,n_y,n_z]:[1,0,0];
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: comment start ]
+Lorentz boost matrix L_b that converts reference frames,
+signs adjusted to fit
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: input   start ] */
+L_b:matrix([γ, %i*γ*β*n_x,%i*γ*β*n_y,%i*γ*β*n_z],
+    [-%i*γ*β*n_x,1+(γ-1)*n_x^2,(γ-1)*n_x*n_y,(γ-1)*n_x*n_z],
+    [-%i*γ*β*n_y,(γ-1)*n_y*n_x,1+(γ-1)*n_y^2,(γ-1)*n_y*n_z],
+    [-%i*γ*β*n_z,(γ-1)*n_z*n_x,(γ-1)*n_z*n_y,1+(γ-1)*n_z^2]);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: comment start ]
+Lorentz transformation with L_b matrix
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: input   start ] */
+a_2: L_b . a_1;
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: comment start ]
+Electromagnetic field tensor,
+signs adjusted to fit
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: input   start ] */
+F_1:matrix(
+    [0,%i*E_x/c,%i*E_y/c,%i*E_z/c],
+    [%i*E_x/c,0,-B_z,B_y],
+    [%i*E_y/c,B_z,0,-B_x],
+    [%i*E_z/c,-B_y,B_x,0]
+) ;
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: comment start ]
+From wikipedia Lorentz Transformations,
+substituting example from
+chapter Transformation of the electromagnetic field
+and verifying that above field vector work for Poincare
+metric to provide same field transformation as Minkowski:
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: input   start ] */
+F_2:zeromatrix(4,4);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+for i from 1 thru 4 do (
+    for j from 1 thru 4 do (
+       F_2[i,j]: row(L_b,i) . F_1 . col(L_b,j)
+    )
+);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: comment start ]
+Electromagnetic tensor viewed from frame 2 which moves
+at speed v, transformed by Lorentz Boost
+computer algebra simplification applied for readability
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: input   start ] */
+F_2:ratsimp(ratsimp(F_2 * (c^2-v^2))/(c^2-v^2));
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: comment start ]
+charge and current densities trasform similar like
+the timespace 4-vector.
+charge density transforms like negative time.
+current density transforms like 3D space-vector.
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: input   start ] */
+J_1:transpose([-%i*c*ρ, j_x, j_y, j_z]);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+J_2: L_b . J_1;
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: comment start ]
+magnetic force on a charge at a distance from a wire
+with electric current (line charge lambda)
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: input   start ] */
+F=q*μ_0*λ*v^2/(2*r*%pi);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: comment start ]
+electric force, relativistic from a line charge
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: input   start ] */
+F=q*E;
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: comment start ]
+electric field of a line charge
+   [wxMaxima: comment end   ] */
+
+
+/* [wxMaxima: input   start ] */
+E=λ/(2*%pi*r*ξ_0);
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: comment start ]
+relativistic effect shortens the distance
+and increases line charge density
+   [wxMaxima: comment end   ] */
+
+
+
+/* Old versions of Maxima abort on loading files that end in a comment. */
+"Created with wxMaxima 22.04.0"$
